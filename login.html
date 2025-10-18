@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GRC Clinic Login</title>
+  <link rel="stylesheet" href="login.css">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="grc-img"> 
+    <img src="grc.png" style="width: 400px; height: 300px;">
+    <h1>WELCOME TO<br/>GRC CLINIC</h1>
+  </div>
+
+  <div class="login">
+    <form id="login-form">
+      <h2>Log In</h2>
+
+      <label for="login-email">Email Address</label>
+      <input type="email" id="login-email" placeholder="grcclinic@gmail.com" required />
+
+        <label for="login-password">Password</label>
+      <div class="password">
+        <input type="password" id="login-password" placeholder="******" required maxlength="20" />
+        <span class="toggle-password" data-target="login-password" aria-hidden="true">
+          <ion-icon name="eye-off-outline" role="img" aria-label="toggle password visibility"></ion-icon>
+        </span>
+      </div>
+
+      <div id="login-message"></div>
+
+      <div class="remember-forgot">
+        <label><input type="checkbox" id="remember-me" /> Remember Me</label>
+        <a href="#">Forgot Password?</a>
+      </div>
+
+      <button type="submit">Log in</button>
+
+
+      <div class="switch-link">
+        Or <a href="signup.html">Create New Account</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+  document.querySelectorAll('.toggle-password').forEach(element => {
+    element.addEventListener('click', () => {
+      const targetId = element.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      const eyeIcon = element.querySelector('ion-icon');
+      if (!input) return;
+      const newType = input.type === 'password' ? 'text' : 'password';
+      input.type = newType;
+      if (eyeIcon) eyeIcon.setAttribute('name', newType === 'password' ? 'eye-off-outline' : 'eye-outline');
+    });
+  });
+
+  const loginForm = document.getElementById('login-form');
+  const messageBox = document.getElementById('login-message');
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const loginEmailRaw = document.getElementById('login-email').value || '';
+      const loginPasswordRaw = document.getElementById('login-password').value || '';
+      const loginEmail = loginEmailRaw.trim().toLowerCase();
+      const loginPassword = loginPasswordRaw.trim();
+
+      const savedEmailRaw = localStorage.getItem('grc_email') || '';
+      const savedPasswordRaw = localStorage.getItem('grc_password') || '';
+      const savedFirst = localStorage.getItem('grc_firstName') || '';
+      const savedLast = localStorage.getItem('grc_lastName') || '';
+
+      const savedEmail = savedEmailRaw.trim().toLowerCase();
+      const savedPassword = savedPasswordRaw.trim();
+
+      console.log('Login attempt:', { loginEmail, loginPasswordLength: loginPassword.length });
+      console.log('Saved account present:', Boolean(savedEmailRaw), 'savedEmail(normalized):', savedEmail, 'savedPasswordLength:', savedPassword.length);
+
+      
+      if (!savedEmailRaw || !savedPasswordRaw) {
+        messageBox.textContent = 'No account found. Please sign up first.';
+        messageBox.className = 'error';
+        return;
+      }
+
+      if (loginEmail === savedEmail && loginPassword === savedPassword) {
+        messageBox.textContent = 'You successfully logged in!';
+        messageBox.className = 'success';
+
+        
+        const userObj = {
+          firstName: savedFirst,
+          lastName: savedLast,
+          email: savedEmail
+        };
+
+        
+        const remember = document.getElementById('remember-me')?.checked;
+        sessionStorage.setItem('loggedInUser', JSON.stringify(userObj));
+        if (remember) {
+          localStorage.setItem('loggedInUser', JSON.stringify(userObj));
+        } else {
+       
+          localStorage.removeItem('loggedInUser');
+        }
+
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 700);
+      } else {
+        messageBox.textContent = 'Invalid email or password. Please try again.';
+        messageBox.className = 'error';
+        console.warn('Login failed — entered vs saved (normalized):', { loginEmail, savedEmail, loginPasswordLength: loginPassword.length, savedPasswordLength: savedPassword.length });
+      }
+    });
+  }
+</script>
+
+
+</body>
+</html>

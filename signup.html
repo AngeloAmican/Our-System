@@ -1,0 +1,197 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GRC Clinic Signup</title>
+  <link rel="stylesheet" href="signup.css">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="grc-img"> 
+    <img src="grc.png" style="width: 400px; height: 300px;">
+    <h1>WELCOME TO<br/>GRC CLINIC</h1>
+  </div>
+
+  <div class="signup">
+    <form id="signup-form">
+      <h2>Create a new account</h2>
+
+      <div style="display:flex; gap: 15px;">
+        <div style="flex: 1;">
+          <label for="first-name">First name</label>
+          <input type="text" id="first-name" placeholder="First name" required />
+        </div>
+        <div style="flex: 1;">
+          <label for="last-name">Last name</label>
+          <input type="text" id="last-name" placeholder="Last name" required />
+        </div>
+      </div>
+
+      <label>Birthday</label>
+      <div class="birthday-selects">
+        <select id="birth-month" required>
+          <option value="" disabled selected>Month</option>
+          <option value="Jan">Jan</option>
+          <option value="Feb">Feb</option>
+          <option value="Mar">Mar</option>
+          <option value="Apr">Apr</option>
+          <option value="May">May</option>
+          <option value="Jun">Jun</option>
+          <option value="Jul">Jul</option>
+          <option value="Aug">Aug</option>
+          <option value="Sep">Sep</option>
+          <option value="Oct">Oct</option>
+          <option value="Nov">Nov</option>
+          <option value="Dec">Dec</option>
+        </select>
+
+        <select id="birth-day" required>
+          <option value="" disabled selected>Day</option>
+        </select>
+
+        <select id="birth-year" required>
+          <option value="" disabled selected>Year</option>
+        </select>
+      </div>
+
+      <label for="signup-email">Email address</label>
+      <input type="email" id="signup-email" placeholder="grcclinic@gmail.com" required />
+
+      <label for="gender">Gender</label>
+      <select id="gender" required>
+        <option value="" disabled selected>Select gender</option>
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+
+      <label for="signup-password">Password</label>
+<div class="password">
+  <input type="password" id="signup-password" placeholder="********" maxlength="20" required />
+  <span class="toggle-password" data-target="signup-password">
+    <ion-icon name="eye-off-outline"></ion-icon>
+  </span>
+</div>
+<div id="password-validation" class="validation-message"></div>
+
+<label for="confirm-password">Confirm password</label>
+<div class="password">
+  <input type="password" id="confirm-password" placeholder="********" maxlength="20" Srequired />
+  <span class="toggle-password" data-target="confirm-password">
+    <ion-icon name="eye-off-outline"></ion-icon>
+  </span>
+</div>
+<div id="confirm-validation" class="validation-message"></div>
+
+      <button type="submit">Sign up</button>
+
+      <div class="switch-link" style="margin-top: 10px;">
+        <a href="login.html">Already have an account?</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.toggle-password').forEach(element => {
+  element.addEventListener('click', () => {
+    const targetId = element.getAttribute('data-target');
+    const input = document.getElementById(targetId);
+    const eyeIcon = element.querySelector('ion-icon');
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      eyeIcon.setAttribute('name', 'eye-outline');
+    } else {
+      input.type = 'password';
+      eyeIcon.setAttribute('name', 'eye-off-outline');
+    }
+  });
+});
+
+  const signupPassword = document.getElementById('signup-password');
+  const confirmPassword = document.getElementById('confirm-password');
+  const passwordValidation = document.getElementById('password-validation');
+  const confirmValidation = document.getElementById('confirm-validation');
+
+  function validatePasswordComplexity(password) {
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    return re.test(password);
+  }
+
+  signupPassword.addEventListener('input', () => {
+    const val = signupPassword.value;
+    if (!validatePasswordComplexity(val)) {
+      passwordValidation.textContent =
+        'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
+    } else {
+      passwordValidation.textContent = '';
+    }
+    if (confirmPassword.value !== '' && val !== confirmPassword.value) {
+      confirmValidation.textContent = 'Passwords do not match.';
+    } else {
+      confirmValidation.textContent = '';
+    }
+  });
+
+  confirmPassword.addEventListener('input', () => {
+    if (signupPassword.value !== confirmPassword.value) {
+      confirmValidation.textContent = 'Passwords do not match.';
+    } else {
+      confirmValidation.textContent = '';
+    }
+  });
+
+  const signupForm = document.getElementById('signup-form');
+  signupForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName = document.getElementById('last-name').value.trim();
+    const email = document.getElementById('signup-email').value;
+    const pass = signupPassword.value;
+    const conf = confirmPassword.value;
+
+    if (!validatePasswordComplexity(pass)) {
+      alert('Please enter a strong password.');
+      signupPassword.focus();
+      return;
+    }
+    if (pass !== conf) {
+      alert('Passwords do not match.');
+      confirmPassword.focus();
+      return;
+    }
+
+    localStorage.setItem('grc_firstName', firstName);
+    localStorage.setItem('grc_lastName', lastName);
+    localStorage.setItem('grc_email', email);
+    localStorage.setItem('grc_password', pass);
+
+    alert('Signup successful! You can now log in.');
+    signupForm.reset();
+    window.location.href = "login.html";
+  });
+
+  const birthDaySelect = document.getElementById('birth-day');
+  const birthYearSelect = document.getElementById('birth-year');
+
+  function populateSelect(select, start, end) {
+    for (let i = start; i <= end; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      select.appendChild(option);
+    }
+  }
+
+  populateSelect(birthDaySelect, 1, 31);
+  const thisYear = new Date().getFullYear();
+  populateSelect(birthYearSelect, thisYear - 120, thisYear);
+  
+</script>
+
+</body>
+</html>
